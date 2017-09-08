@@ -39,7 +39,7 @@ jobs:
           command: |
             set -x
             echo "Setup Pants ..."
-            sudo apt-get install --yes build-essential libssl-dev libffi-dev
+            sudo apt-get install --yes build-essential libssl-dev libffi-dev python-pip
             git clone https://github.com/twitter/commons.git
             ls -al
             cd commons
@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Setup Pants
           command: |
-            sudo apt-get install --yes build-essential libssl-dev libffi-dev
+            sudo apt-get install --yes build-essential libssl-dev libffi-dev python-pip
             git clone https://github.com/twitter/commons.git
             ls -al
             cd commons

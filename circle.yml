@@ -48,11 +48,13 @@ jobs:
           name: List Build Targets with Buck
           command: |
             set -x
+            cd commons
             ./pants goals
       - run:
           name: Build with Pants
           command: |
             set -x
+            cd commons
             sed -i -e 's/java7/java8/g' pants.ini
             sed -i -e "s/'target': 7/'target': 8/g" pants.ini
             sed -i -e 's/1.7.999/1.8.999/g' pants.ini
@@ -61,6 +63,7 @@ jobs:
           name: Run after Pants
           command: |
             set -x
+            cd commons
   test:
     docker:
       - image: circleci/openjdk:jdk
@@ -100,11 +103,13 @@ jobs:
           name: List Build Targets with Buck
           command: |
             set -x
+            cd commons
             ./pants goals
       - run:
           name: Test with Pants
           command: |
             set -x
+            cd commons
             sed -i -e 's/java7/java8/g' pants.ini
             sed -i -e "s/'target': 7/'target': 8/g" pants.ini
             sed -i -e 's/1.7.999/1.8.999/g' pants.ini

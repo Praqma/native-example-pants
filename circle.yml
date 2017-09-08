@@ -1,0 +1,120 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:jdk
+    working_directory: ~/sheeeng/omed-pants
+    steps:
+      - checkout
+      - run:
+          name: Update & Upgrade
+          command: |
+            set -x
+            sudo apt-get update
+            sudo apt-get upgrade
+      - run:
+          name: Check Version
+          command: |
+            set -x
+            java -version
+      - run:
+          name: Setup Make Prerequisites
+          command: |
+            set -x
+            echo "Setup Make Prerequisites ..."
+            sudo apt-get install --yes build-essential
+            gcc --version
+      - run:
+          name: Setup CircleCI Prerequisites
+          # The git openssh tar gzip ca-certificates tools required for CircleCI.
+          # The alpine-sdk is similar to build-essential, need to be verified whether it is needed.
+          # https://circleci.com/docs/2.0/custom-images/#adding-required-and-custom-tools-or-files
+          command: |
+            set -x
+            echo "Setup CircleCI Prerequisites ..."
+            sudo apt-get install --yes pkg-config zip g++ zlib1g-dev unzip python
+            gcc --version
+      - run:
+          name: Setup Pants
+          command: |
+            set -x
+            echo "Setup Pants ..."
+            sudo apt-get install --yes build-essential libssl-dev libffi-dev
+            git clone https://github.com/twitter/commons.git
+            cd ~/commons
+            ./pants -V
+      - run:
+          name: List Build Targets with Buck
+          command: |
+            set -x
+            ./pants goals
+      - run:
+          name: Build with Pants
+          command: |
+            set -x
+            sed -i -e 's/java7/java8/g' pants.ini
+            sed -i -e "s/'target': 7/'target': 8/g" pants.ini
+            sed -i -e 's/1.7.999/1.8.999/g' pants.ini
+            ./pants binary
+      - run:
+          name: Run after Pants
+          command: |
+            set -x
+  test:
+    docker:
+      - image: circleci/openjdk:jdk
+    working_directory: ~/sheeeng/omed-pants
+    steps:
+      - checkout
+      - run:
+          name: Update & Upgrade
+          command: |
+            set -x
+            sudo apt-get update
+            sudo apt-get upgrade
+      - run:
+          name: Check Version
+          command: |
+            set -x
+            java -version
+      - run:
+          name: Setup CircleCI Prerequisites
+          # The git openssh tar gzip ca-certificates tools required for CircleCI.
+          # The alpine-sdk is similar to build-essential, need to be verified whether it is needed.
+          # https://circleci.com/docs/2.0/custom-images/#adding-required-and-custom-tools-or-files
+          command: |
+            set -x
+            echo "Setup CircleCI Prerequisites ..."
+            sudo apt-get install --yes pkg-config zip g++ zlib1g-dev unzip python
+            gcc --version
+      - run:
+          name: Setup Pants
+          command: |
+            sudo apt-get install --yes build-essential libssl-dev libffi-dev
+            git clone https://github.com/twitter/commons.git
+            cd ~/commons
+            ./pants -V
+      - run:
+          name: List Build Targets with Buck
+          command: |
+            set -x
+            ./pants goals
+      - run:
+          name: Test with Pants
+          command: |
+            set -x
+            sed -i -e 's/java7/java8/g' pants.ini
+            sed -i -e "s/'target': 7/'target': 8/g" pants.ini
+            sed -i -e 's/1.7.999/1.8.999/g' pants.ini
+            ./pants test {src,tests}/java/com/twitter/common::
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

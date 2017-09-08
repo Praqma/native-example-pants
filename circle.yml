@@ -41,7 +41,8 @@ jobs:
             echo "Setup Pants ..."
             sudo apt-get install --yes build-essential libssl-dev libffi-dev
             git clone https://github.com/twitter/commons.git
-            cd ~/commons
+            ls -al
+            cd commons
             ./pants -V
       - run:
           name: List Build Targets with Buck
@@ -92,7 +93,8 @@ jobs:
           command: |
             sudo apt-get install --yes build-essential libssl-dev libffi-dev
             git clone https://github.com/twitter/commons.git
-            cd ~/commons
+            ls -al
+            cd commons
             ./pants -V
       - run:
           name: List Build Targets with Buck

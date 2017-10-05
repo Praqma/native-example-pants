@@ -16,6 +16,7 @@ RUN curl \
   && python /tmp/get-pip.py
 
 RUN pip install \
+  pants \
   pipenv
 
 RUN apt-get clean \

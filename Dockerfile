@@ -5,7 +5,8 @@ RUN apt-get update \
   curl \
   build-essential \
   git \
-  python
+  python \
+  python-dev
 
 RUN curl \
   --silent \

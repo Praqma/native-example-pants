@@ -1,0 +1,24 @@
+sudo: required
+
+services:
+  - docker
+
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+notifications:
+  email:
+    on_success: never # default: change
+    on_failure: change # default: always
+
+before_install:
+  - git submodule update --init
+  - docker pull praqma/native-pants:latest
+
+script:
+  - ls -al ${PWD}
+  - docker run --rm --workdir=/workspace --volume ${PWD}:/workspace praqma/native-pants:latest ./build.sh
+  - docker run --rm --workdir=/workspace --volume ${PWD}:/workspace praqma/native-pants:latest ./test.sh
